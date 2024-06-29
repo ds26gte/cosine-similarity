@@ -1,0 +1,38 @@
+= README
+
+Implements the cosine similarity algorithm described in
+https://cs.brown.edu/courses/csci0190/2023/docdiff.html.
+
+We'd like to store the input documents in Google Drive. Currently
+the only Drive documents that we can work with are spreadsheets,
+so we add a way to extract the relevant text from a spreadsheet.
+We will assume that that the spreadsheets used for this purpose
+contain only one cell, which contains the entire text of the
+document. We may need to revisit based on any size limitations
+imposed by Google Spreadsheets. The first step then would be to
+then to spread the text across a single column.
+
+The functions provided:
+
+- `cosine-similarity-lists()` which takes two lists of words
+  (strings) and finds the cosine similarity between them.
+
+- `cosine-similarity-files()` which takes two Google Drive IDs,
+  and finds the cosine similarity between their respective
+  spreadsheet single-cell contents.
+
+Internally, a list of words associated with one document is
+uniquified, and a (non-mutable) string-dict is created associating each word
+with its count. Thus the list associated with a document maps
+(only) the words in it to their counts. We don't need to keep
+track of any other words that may appear in comparable documents
+(unlike docdiff).
+
+The `dot-product()` of two such string-dicts goes over every key
+in the first dict, and if it is also represented in the second
+dict, multiplies them. The sum of such multiples is the dot
+product.
+
+To normalize this dot-product (i.e., to hem it between 0 and 1),
+we divide by the larger self dot-product of the two string-dicts.
+
