@@ -39,8 +39,7 @@ end
 
 # headerless spreadsheet with just one cell containing a string
 
-fun get-spreadsheet-cell(file :: String) -> List<String>:
-  ss = GDS.load-spreadsheet(file)
+fun get-spreadsheet-cell(ss :: Any) -> List<String>:
   ws = GDS.open-sheet-by-index(ss, 0, false)
   tbl = load-table: text :: String
     source: ws
@@ -50,10 +49,21 @@ fun get-spreadsheet-cell(file :: String) -> List<String>:
   string-split-all(string-to-lower(entire-col.get(0)), ' ')
 end
 
-fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
-  words1 = get-spreadsheet-cell(file1)
-  words2 = get-spreadsheet-cell(file2)
+fun get-spreadsheet-file-cell(file :: String) -> List<String>:
+  ss = GDS.load-spreadsheet(file)
+  get-spreadsheet-cell(ss)
+end
+
+fun cosine-similarity-sheets(ss1 :: Any, ss2 :: Any) -> Number:
+  words1 = get-spreadsheet-cell(ss1)
+  words2 = get-spreadsheet-cell(ss2)
   cosine-similarity-lists(words1, words2)
+end
+
+fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
+  ss1 = GDS.load-spreadsheet(file1)
+  ss2 = GDS.load-spreadsheet(file2)
+  cosine-similarity-sheets(ss1, ss2)
 end
 
 fun testt():
