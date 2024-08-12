@@ -54,18 +54,27 @@ fun get-spreadsheet-file-cell(file :: String) -> List<String>:
   get-spreadsheet-cell(ss)
 end
 
-fun cosine-similarity-sheets(ss1 :: Any, ss2 :: Any) -> Number:
+
+fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
+  ss1 = GDS.load-spreadsheet(file1)
+  ss2 = GDS.load-spreadsheet(file2)
   words1 = get-spreadsheet-cell(ss1)
   words2 = get-spreadsheet-cell(ss2)
   cosine-similarity-lists(words1, words2)
 end
 
-fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
+fun simple-similarity-files(file1 :: String, file2 :: String) -> Number:
   ss1 = GDS.load-spreadsheet(file1)
   ss2 = GDS.load-spreadsheet(file2)
-  cosine-similarity-sheets(ss1, ss2)
+  words1 = get-spreadsheet-cell(ss1)
+  words2 = get-spreadsheet-cell(ss2)
+  if words1 == words2: 1
+  else: 0
+  end
 end
 
+var sheet_id = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
+
 fun testt():
-  cosine-similarity-files("1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ", "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ")
+  cosine-similarity-files(sheet_id, sheet_id)
 end
