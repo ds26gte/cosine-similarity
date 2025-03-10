@@ -38,3 +38,16 @@ product.
 To normalize this dot-product (i.e., to hem it between 0 and 1),
 we divide by the larger self dot-product of the two string-dicts.
 
+
+== Other types of similarity
+
+Two other simpler forms of similarity are also provided (with the
+same signature as for cosine similarity above):
+
+- `simple-similarity-lists()` and `simple-similarity-files()`
+  check if the words are the same in the same order. Only outputs
+  are 0 and 1.
+
+- `bow-similarity-lists()` and `bow-similarity-files()` check if
+  the Bag Of Words are the same (i.e., order doesn't matter, but
+  count does). Only outputs are 0 and 1.
