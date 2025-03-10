@@ -20,7 +20,7 @@ fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> N
   var n = 0
   sd1-key-list = sd1.keys-list()
   for each(key from sd1-key-list) block:
-    if sd2.has-key(key): 
+    if sd2.has-key(key):
       n := n + (sd1.get-value(key) * sd2.get-value(key))
     else:
       n := n
@@ -32,7 +32,11 @@ end
 fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
   sd1 = list-of-words-to-sd(words1)
   sd2 = list-of-words-to-sd(words2)
-  dot-product(sd1, sd2) / num-max(dot-product(sd1, sd1), dot-product(sd2, sd2))
+  # cosine similarity as defined in standard Pyret assignment docdiff
+  # dot-product(sd1, sd2) / num-max(dot-product(sd1, sd1), dot-product(sd2, sd2))
+
+  # the usual (wikipedia) cosine similarity
+  dot-product(sd1, sd2) / (sqrt(dot-product(sd1, sd1)) * sqrt(dot-product(sd2, sd2)))
 end
 
 #  1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ
@@ -75,6 +79,10 @@ end
 
 var sheet_id = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
 
-fun testt():
-  cosine-similarity-files(sheet_id, sheet_id)
+check:
+  # comparing file to itself shd always yield 1
+  cosine-similarity-files(sheet_id, sheet_id) is-roughly 1
+  cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 1
+  cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly (1 / sqrt(2))
+  cosine-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~0.49
 end

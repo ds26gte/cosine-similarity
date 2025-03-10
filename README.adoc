@@ -1,7 +1,9 @@
 = README
 
-Implements the cosine similarity algorithm described in
-https://cs.brown.edu/courses/csci0190/2023/docdiff.html.
+Implements the cosine similarity algorithm as described in
+https://www.geeksforgeeks.org/cosine-similarity/. (Note: We have an
+another less-standard algorithm in our examplar assignment
+https://cs.brown.edu/courses/csci0190/2023/docdiff.html.)
 
 We'd like to store the input documents in Google Drive. Currently
 the only Drive documents that we can work with are spreadsheets,
