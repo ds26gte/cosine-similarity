@@ -23,6 +23,10 @@ The functions provided:
   and finds the cosine similarity between their respective
   spreadsheet single-cell contents.
 
+- `cosine-similarity()` which takes two strings, and finds teh
+  cosine similarity of the list of words contained in the
+  respective strings.
+
 Internally, a list of words associated with one document is
 uniquified, and a (non-mutable) string-dict is created associating each word
 with its count. Thus the list associated with a document maps
@@ -36,18 +40,21 @@ dict, multiplies them. The sum of such multiples is the dot
 product.
 
 To normalize this dot-product (i.e., to hem it between 0 and 1),
-we divide by the larger self dot-product of the two string-dicts.
-
+we divide by the product of the magnitudes of the two
+string-dicts. (The magnitude of a string-dict is the square-root of
+its dot-product with itself.)
 
 == Other types of similarity
 
 Two other simpler forms of similarity are also provided (with the
 same signature as for cosine similarity above):
 
-- `simple-similarity-lists()` and `simple-similarity-files()`
-  check if the words are the same in the same order. Only outputs
-  are 0 and 1.
+- `simple-similarity-lists()`, `simple-similarity-files()`, and
+  `simple-similarity()`
+  check if the words are the same in the same order. Output is
+  boolean.
 
-- `bow-similarity-lists()` and `bow-similarity-files()` check if
+- `bow-similarity-lists()`, `bow-similarity-files()`, and
+  `bow-similarity()` check if
   the Bag Of Words are the same (i.e., order doesn't matter, but
-  count does). Only outputs are 0 and 1.
+  count does). Output is boolean.
