@@ -6,6 +6,10 @@ import gdrive-sheets as GDS
 
 import data-source as DS
 
+import tables as T
+
+import sets as S
+
 fun list-of-words-to-sd(xx :: List<String>) -> SD.StringDict<Number> block:
   msd = [SD.mutable-string-dict:]
   for each(x from xx):
@@ -16,6 +20,37 @@ fun list-of-words-to-sd(xx :: List<String>) -> SD.StringDict<Number> block:
     msd.set-now(x, old-value + 1)
   end
   msd.freeze()
+end
+
+lower-case-a-cp = string-to-code-point('a')
+lower-case-z-cp = string-to-code-point('z')
+
+fun is-non-punct(c :: String) -> Boolean:
+  if (c == ' ') or (c == '\n'): true
+  else:
+    c-cp = string-to-code-point(c)
+    (c-cp >= lower-case-a-cp) and (c-cp <= lower-case-z-cp)
+  end
+end
+
+fun massage-string(w :: String) -> String:
+  fold(lam(string-a, string-b): string-a + string-b end, '',
+    filter(is-non-punct, string-explode(string-to-lower(w))))
+end
+
+fun string-to-list-of-natlang-words(s :: String) -> List<String>:
+  string-split-all(massage-string(string-to-lower(s)), ' ')
+end
+
+fun string-to-bag(str :: String) -> Table block:
+  sd = list-of-words-to-sd(string-to-list-of-natlang-words(str))
+  var tbl = table: word :: String, frequency :: Number end
+  words = sd.keys().to-list()
+  for each(word from words):
+    new-row = tbl.row(word, sd.get-value(word))
+    tbl := tbl.add-row(new-row)
+  end
+  tbl
 end
 
 fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> Number block:
@@ -30,6 +65,27 @@ fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> N
   end
   n
 end
+
+#  1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ
+
+# headerless spreadsheet with just one cell containing a string
+
+fun get-spreadsheet-string(ss :: Any) -> String:
+  ws = GDS.open-sheet-by-index(ss, 0, false)
+  tbl = load-table: text :: String
+    source: ws
+    sanitize text using DS.string-sanitizer
+  end
+  entire-col = extract text from tbl end
+  entire-col.get(0)
+end
+
+fun get-spreadsheet-words(ss :: Any) -> List<String>:
+  cell-string = get-spreadsheet-string(ss)
+  string-to-list-of-natlang-words(cell-string)
+end
+
+#  *-similarity-lists functions: These compare lists of strings
 
 fun simple-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> Boolean:
   words1 == words2
@@ -54,24 +110,14 @@ fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> N
   end
 end
 
-a-cp = string-to-code-point('a')
-z-cp = string-to-code-point('z')
-
-fun is-letter(c):
-  c-cp = string-to-code-point(c)
-  (c >= a-cp) and (c <= z-cp)
-end
-
-fun remove-punct(w :: String):
-  fold(lam(string-a, string-b): string-a + string-b end, '', filter(is-letter, string-explode(w)))
-end
-
-fun string-to-list-of-natlang-words(s :: String):
-  string-split-all(string-to-lower(s), ' ')
-end
+# *-similarity functions: These compare string inputs directly
 
 fun simple-similarity(string1 :: String, string2 :: String) -> Boolean:
-  string1 == string2
+  # either use straight string comparison, or
+  # massage the argument strings (converting to lower case, removing punctuation) before comparing
+  #
+  # string1 == string2
+  simple-similarity-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
 end
 
 fun bow-similarity(string1 :: String, string2 :: String) -> Boolean:
@@ -82,25 +128,7 @@ fun cosine-similarity(string1 :: String, string2 :: String) -> Number:
   cosine-similarity-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
 end
 
-#  1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ
-
-# headerless spreadsheet with just one cell containing a string
-
-fun get-spreadsheet-string(ss :: Any) -> String:
-  ws = GDS.open-sheet-by-index(ss, 0, false)
-  tbl = load-table: text :: String
-    source: ws
-    sanitize text using DS.string-sanitizer
-  end
-  entire-col = extract text from tbl end
-  entire-col.get(0)
-end
-
-
-fun get-spreadsheet-words(ss :: Any) -> List<String>:
-  cell-string = get-spreadsheet-string(ss)
-  string-to-list-of-natlang-words(cell-string)
-end
+# *-similarity-files: These compares files (Google Ids) containing the respective contents
 
 fun simple-similarity-files(file1 :: String, file2 :: String) -> Boolean:
   ss1 = GDS.load-spreadsheet(file1)
@@ -151,5 +179,8 @@ check:
   cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly (1 / sqrt(2))
   cosine-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~0.49
   cosine-similarity("doo doo be doo be", "doo be doo be doo") is-roughly 1
+
+  S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
+  S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]
 
 end
