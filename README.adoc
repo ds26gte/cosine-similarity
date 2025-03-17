@@ -58,3 +58,9 @@ same signature as for cosine similarity above):
   `bow-similarity()` check if
   the Bag Of Words are the same (i.e., order doesn't matter, but
   count does). Output is boolean.
+
+== Debugging aid
+
+The function `string-to-bag()` takes a text (string) and after
+collapsing case and removing punctuation, returns a table of
+rows, where each row lists a word along with its frequency.
