@@ -110,6 +110,11 @@ fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> N
   end
 end
 
+fun angle-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
+  cos-sim = cosine-similarity-lists(words1, words2)
+  (num-acos(cos-sim) * 180) / PI
+end
+
 # *-similarity functions: These compare string inputs directly
 
 fun simple-similarity(string1 :: String, string2 :: String) -> Boolean:
@@ -126,6 +131,11 @@ end
 
 fun cosine-similarity(string1 :: String, string2 :: String) -> Number:
   cosine-similarity-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
+end
+
+fun angle-similarity(string1 :: String, string2 :: String) -> Number:
+  cos-sim = cosine-similarity(string1, string2)
+  (num-acos(cos-sim) * 180) / PI
 end
 
 # *-similarity-files: These compares files (Google Ids) containing the respective contents
@@ -154,6 +164,11 @@ fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
   cosine-similarity-lists(words1, words2)
 end
 
+fun angle-similarity-files(file1 :: String, file2 :: String) -> Number:
+  cos-sim = cosine-similarity-files(file1, file2)
+  (num-acos(cos-sim) * 180) / PI
+end
+
 var sheet_id = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
 
 check:
@@ -179,6 +194,13 @@ check:
   cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly (1 / sqrt(2))
   cosine-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~0.49
   cosine-similarity("doo doo be doo be", "doo be doo be doo") is-roughly 1
+
+  angle-similarity-files(sheet_id, sheet_id) is-roughly 0
+  angle-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 0
+  angle-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is-roughly 0
+  angle-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly ~45
+  angle-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~60.878
+  angle-similarity("doo doo be doo be", "doo be doo be doo") is-roughly 0
 
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]

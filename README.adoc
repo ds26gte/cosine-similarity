@@ -59,6 +59,10 @@ same signature as for cosine similarity above):
   the Bag Of Words are the same (i.e., order doesn't matter, but
   count does). Output is boolean.
 
+- `angle-similarity-lists()`, `angle-similarity-files()`, and
+  `angle-similarity` return the arccos of what the corresponding
+  `cosine-similarity*` function returns. Output is in degrees.
+
 == Debugging aid
 
 The function `string-to-bag()` takes a text (string) and after
