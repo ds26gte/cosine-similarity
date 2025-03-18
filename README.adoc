@@ -44,23 +44,23 @@ we divide by the product of the magnitudes of the two
 string-dicts. (The magnitude of a string-dict is the square-root of
 its dot-product with itself.)
 
-== Other types of similarity
+== Other types of comparison
 
-Two other simpler forms of similarity are also provided (with the
+Two other simpler forms of comparison are also provided (with the
 same signature as for cosine similarity above):
 
-- `simple-similarity-lists()`, `simple-similarity-files()`, and
-  `simple-similarity()`
+- `simple-equality-lists()`, `simple-equality-files()`, and
+  `simple-equality()`
   check if the words are the same in the same order. Output is
   boolean.
 
-- `bow-similarity-lists()`, `bow-similarity-files()`, and
-  `bow-similarity()` check if
+- `bow-equality-lists()`, `bow-equality-files()`, and
+  `bow-equality()` check if
   the Bag Of Words are the same (i.e., order doesn't matter, but
   count does). Output is boolean.
 
-- `angle-similarity-lists()`, `angle-similarity-files()`, and
-  `angle-similarity` return the arccos of what the corresponding
+- `angle-distance-lists()`, `angle-distance-files()`, and
+  `angle-distance` return the arccos of what the corresponding
   `cosine-similarity*` function returns. Output is in degrees.
 
 == Debugging aid

@@ -65,7 +65,7 @@ fun distance-to(candidate-article :: String, ignore-stop-words :: Boolean) -> Ta
   for each(named-article from standard-named-articles):
     article-name = named-article.get(0)
     article-words = string-to-list-of-natlang-words(named-article.get(1))
-    new-row = tbl.row(article-name, angle-similarity-lists(candidate-words, article-words))
+    new-row = tbl.row(article-name, angle-distance-lists(candidate-words, article-words))
     tbl := tbl.add-row(new-row)
   end
   tbl
