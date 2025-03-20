@@ -53,8 +53,28 @@ student-article = elephant-article
 
 standard-stop-words = [list: "a", "an", "the"]
 
+fun distance-table-get-article-similarity(tbl :: Table, art :: String) block:
+  table-rows = tbl.all-rows()
+  var answer-found = false
+  var simty = 0
+  var keep-else-happy = false
+  for each(table-row from table-rows) block:
+    if not(answer-found):
+      if table-row.get-value('article') == art block:
+        simty := table-row.get-value('similarity')
+        answer-found := true
+      else:
+        keep-else-happy := false
+      end
+    else:
+      keep-else-happy := false
+    end
+  end
+  simty
+end
+
 fun distance-to(candidate-article :: String, ignore-stop-words :: Boolean) -> Table block:
-  var orig-candidate-words = string-to-list-of-natlang-words(candidate-article)
+  orig-candidate-words = string-to-list-of-natlang-words(candidate-article)
   var candidate-words = empty
   if ignore-stop-words:
     candidate-words := orig-candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
@@ -62,14 +82,28 @@ fun distance-to(candidate-article :: String, ignore-stop-words :: Boolean) -> Ta
     candidate-words := orig-candidate-words
   end
   var tbl = table: article :: String, similarity :: Number end
-  for each(named-article from standard-named-articles):
+  for each(named-article from standard-named-articles) block:
     article-name = named-article.get(0)
-    article-words = string-to-list-of-natlang-words(named-article.get(1))
+    orig-article-words = string-to-list-of-natlang-words(named-article.get(1))
+    var article-words = empty
+    if ignore-stop-words:
+      article-words := orig-article-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+    else:
+      article-words := orig-article-words
+    end
     new-row = tbl.row(article-name, angle-difference-lists(candidate-words, article-words))
     tbl := tbl.add-row(new-row)
   end
   tbl
 end
+
+check:
+  tbl1 = distance-to(elephant-article, true)
+  tbl2 = distance-to(elephant-article, false)
+  distance-table-get-article-similarity(tbl1, 'elephant') is 0
+  distance-table-get-article-similarity(tbl2, 'elephant') is 0
+end
+
 
 # try
 #
