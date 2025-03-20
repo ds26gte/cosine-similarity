@@ -75,7 +75,7 @@ fun distance-table-get-article-similarity(tbl :: Table, art :: String) block:
   simty
 end
 
-fun distance-to(candidate-article :: String, ignore-stop-words :: Boolean) -> Table block:
+fun distance-to-2(candidate-article :: String, ignore-stop-words :: Boolean) -> Table block:
   orig-candidate-words = string-to-list-of-natlang-words(candidate-article)
   var candidate-words = empty
   if ignore-stop-words:
@@ -100,18 +100,25 @@ fun distance-to(candidate-article :: String, ignore-stop-words :: Boolean) -> Ta
 end
 
 check:
-  tbl1 = distance-to(elephant-article, true)
-  tbl2 = distance-to(elephant-article, false)
+  tbl1 = distance-to-2(elephant-article, true)
+  tbl2 = distance-to-2(elephant-article, false)
   distance-table-get-article-similarity(tbl1, 'elephant') is 0
   distance-table-get-article-similarity(tbl2, 'elephant') is 0
 end
 
+fun distance-to(candidate-article):
+  distance-to-2(candidate-article, false)
+end
+
+fun distance-to-stop(candidate-article):
+  distance-to-2(candidate-article, true)
+end
 
 # try
 #
-# distance-to(student-article, false)
+# distance-to(student-article)
 # -- this doesn't ignore stop words
 
-# distance-to(student-article, true)
+# distance-to-stop(student-article)
 # -- this does ignore stop words
 
