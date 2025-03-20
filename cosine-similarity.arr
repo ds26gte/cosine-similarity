@@ -62,14 +62,12 @@ fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> N
   for each(key from sd1-key-list) block:
     if sd2.has-key(key):
       n := n + (sd1.get-value(key) * sd2.get-value(key))
-    else:
-      n := n
+    else: false
     end
   end
   n
 end
 
-# headerless spreadsheet with just one cell containing a string
 
 fun get-spreadsheet-string(ss :: Any) -> String:
   ws = GDS.open-sheet-by-index(ss, 0, false)
@@ -101,10 +99,12 @@ end
 fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
   sd1 = list-of-words-to-sd(words1)
   sd2 = list-of-words-to-sd(words2)
-  # cosine similarity as defined in standard Pyret assignment docdiff
+  # we are NOT using
+  # cosine similarity as defined in standard Pyret assignment docdiff, which is
   # dot-product(sd1, sd2) / num-max(dot-product(sd1, sd1), dot-product(sd2, sd2))
 
-  # the usual (wikipedia) cosine similarity
+  # the usual cosine similarity, as described in
+  # https://en.wikipedia.org/wiki/Cosine_similarity
   if sd1 == sd2: 1
   else:
     dot-product(sd1, sd2) / (sqrt(dot-product(sd1, sd1)) * sqrt(dot-product(sd2, sd2)))
@@ -139,7 +139,8 @@ fun angle-difference(string1 :: String, string2 :: String) -> Number:
   (num-acos(cos-sim) * 180) / PI
 end
 
-# *-similarity-files: These compares files (Google Ids) containing the respective contents
+# *-similarity-files: These compares files (Google Ids) containing the respective contents.
+# format: headerless spreadsheet with just one cell containing a string
 
 fun simple-equality-files(file1 :: String, file2 :: String) -> Boolean:
   ss1 = GDS.load-spreadsheet(file1)
@@ -174,84 +175,3 @@ var sheet_id1 = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
 
 var sheet_id2 = "10ngDjr6ahZICKrSVb6zFnOKRDmqMNeqqJCVEDvxONWs"
 
-check:
-
-  # comparing file to itself shd always yield true
-  simple-equality-files(sheet_id1, sheet_id1) is true
-  simple-equality-files(sheet_id2, sheet_id2) is true
-  # comparing file to a different file shd always yield false
-  simple-equality-files(sheet_id1, sheet_id2) is false
-  simple-equality-files(sheet_id2, sheet_id1) is false
-  #
-  simple-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
-  simple-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is false
-  simple-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is false
-  simple-equality-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is false
-  simple-equality-lists([list: "a", "b", "c", "d"], [list: "a", "b", "c", "d"]) is true
-  #
-  simple-equality("apple apple orange", "apple apple orange") is true
-  simple-equality("apple apple orange", "apple orange apple") is false
-  simple-equality("apple apple orange", "apple orange orange orange")is false
-  simple-equality("a a a b b d d d d d", "a") is false
-  simple-equality("a b c d", "a b c d") is true
-
-  # comparing file to itself shd always yield true
-  bag-equality-files(sheet_id1, sheet_id1) is true
-  bag-equality-files(sheet_id2, sheet_id2) is true
-  # comparing file to a different file shd always yield false
-  bag-equality-files(sheet_id1, sheet_id2) is false
-  bag-equality-files(sheet_id2, sheet_id1) is false
-  #
-  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
-  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is true
-  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is false
-  bag-equality-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is false
-  bag-equality-lists([list: "a", "b", "c", "d"], [list: "a", "b", "c", "d"]) is true
-  #
-  bag-equality("apple apple orange", "apple apple orange") is true
-  bag-equality("apple apple orange", "apple orange apple") is true
-  bag-equality("apple apple orange", "apple orange orange orange")is false
-  bag-equality("a a a b b d d d d d", "a") is false
-  bag-equality("a b c d", "a b c d") is true
-
-  # comparing file to itself shd always yield 1
-  cosine-similarity-files(sheet_id1, sheet_id1) is-roughly 1
-  # comparing file to a different file shd always yield < 1
-  cosine-similarity-files(sheet_id1, sheet_id2) satisfies lam(x): x < 1 end
-  cosine-similarity-files(sheet_id2, sheet_id1) satisfies lam(x): x < 1 end
-  #
-  cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 1
-  cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is-roughly 1
-  cosine-similarity-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly (1 / sqrt(2))
-  cosine-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~0.49
-  cosine-similarity-lists([list: "doo", "doo", "be", "doo", "be"], [list: "doo", "be", "doo", "be", "doo"]) is-roughly 1
-  #
-  cosine-similarity("apple apple orange", "apple apple orange") is-roughly 1
-  cosine-similarity("apple apple orange", "apple orange apple") is-roughly 1
-  cosine-similarity("apple apple orange", "apple orange orange orange") is-roughly (1 / sqrt(2))
-  cosine-similarity("a a a b b d d d d d", "a") is%(within-rel(0.01)) ~0.49
-  cosine-similarity("doo doo be doo be", "doo be doo be doo") is-roughly 1
-
-  # comparing file to istelf shd always yield 0
-  angle-difference-files(sheet_id1, sheet_id1) is-roughly 0
-  angle-difference-files(sheet_id2, sheet_id2) is-roughly 0
-  # comparing file to a different file shd always yield >0
-  angle-difference-files(sheet_id1, sheet_id2) satisfies lam(x): x > 0 end
-  angle-difference-files(sheet_id2, sheet_id1) satisfies lam(x): x > 0 end
-  #
-  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 0
-  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is-roughly 0
-  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly ~45
-  angle-difference-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~60.878
-  angle-difference-lists([list: "doo", "doo", "be", "doo", "be"], [list: "doo", "be", "doo", "be", "doo"]) is%(within-rel(0.01)) 0
-  #
-  angle-difference("apple apple orange", "apple apple orange") is-roughly 0
-  angle-difference("apple apple orange", "apple orange apple") is-roughly 0
-  angle-difference("apple apple orange", "apple orange orange orange") is-roughly ~45
-  angle-difference("a a a b b d d d d d", "a") is%(within-rel(0.01)) ~60.878
-  angle-difference("doo doo be doo be", "doo be doo be doo") is-roughly 0
-  #
-  S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
-  S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]
-
-end

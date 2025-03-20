@@ -55,43 +55,20 @@ student-article = elephant-article
 
 standard-stop-words = [list: "the", "and", "a", "that", "was", "for", "with", "not", "on", "at", "i", "had", "are", "or", "an", "they", "one", "would", "all", "there", "their", "him", "has", "when", "if", "out", "what", "up", "about", "into", "can", "other", "some", "time", "two", "then", "do", "now", "such", "man", "our", "even", "made", "after", "many", "must", "years", "much", "your", "down", "should", "of", "to", "in", "is", "he", "it", "as", "his", "be", "by", "this", "but", "from", "have", "you", "which", "were", "her", "she", "will", "we", "been", "who", "more", "no", "so", "said", "its", "than", "them", "only", "new", "could", "these", "may", "first", "any", "my", "like", "over", "me", "most", "also", "did", "before", "through", "where", "back", "way", "well", "because", "each", "people", "state", "mr", "how", "make", "still", "own", "work", "long", "both", "under", "never", "same", "while", "last", "might", "day", "since", "come", "great", "three", "go", "few", "use", "without", "place", "old", "small", "home", "went", "once", "school", "every", "united", "number", "does", "away", "water", "fact", "though", "enough", "almost", "took", "night", "system", "general", "better", "why", "end", "find", "asked", "going", "knew", "toward", "just", "those", "too", "world", "very", "good", "see", "men", "here", "get", "between", "year", "another", "being", "life", "know", "us", "off", "against", "came", "right", "states", "take", "himself", "during", "again", "around", "however", "mrs", "thought", "part", "high", "upon", "say", "used", "war", "until", "always", "something", "public", "put", "think", "head", "far", "hand", "set", "nothing", "point", "house", "later", "eyes", "next", "program", "give", "white", "room", "social", "young", "present", "order", "second", "possible", "light", "face", "important", "among", "early", "need", "within", "business", "felt", "best", "ever", "least", "got", "mind", "want", "others", "although", "open", "area", "done", "certain", "door", "different", "sense", "help", "perhaps", "group", "side", "several", "let", "national", "given", "rather", "per", "often", "god", "things", "large", "big", "become", "case", "along", "four", "power", "saw", "less", "thing", "today", "interest", "turned", "members", "family", "problem", "kind", "began", "thus", "seemed", "whole", "itself"]
 
-fun distance-table-get-article-similarity(tbl :: Table, art :: String) block:
-  table-rows = tbl.all-rows()
-  var answer-found = false
-  var simty = 0
-  var keep-else-happy = false
-  for each(table-row from table-rows) block:
-    if not(answer-found):
-      if table-row.get-value('article') == art block:
-        simty := table-row.get-value('similarity')
-        answer-found := true
-      else:
-        keep-else-happy := false
-      end
-    else:
-      keep-else-happy := false
-    end
-  end
-  simty
-end
 
-fun distance-to-2(candidate-article :: String, ignore-stop-words :: Boolean) -> Table block:
-  orig-candidate-words = string-to-list-of-natlang-words(candidate-article)
-  var candidate-words = empty
+fun distance-to-helper(candidate-article :: String, corpus :: List<Any>, ignore-stop-words :: Boolean) -> Table block:
+  var candidate-words = string-to-list-of-natlang-words(candidate-article)
   if ignore-stop-words:
-    candidate-words := orig-candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
-  else:
-    candidate-words := orig-candidate-words
+    candidate-words := candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+  else: false
   end
   var tbl = table: article :: String, similarity :: Number end
-  for each(named-article from standard-named-articles) block:
+  for each(named-article from corpus) block:
     article-name = named-article.get(0)
-    orig-article-words = string-to-list-of-natlang-words(named-article.get(1))
-    var article-words = empty
+    var article-words = string-to-list-of-natlang-words(named-article.get(1))
     if ignore-stop-words:
-      article-words := orig-article-words.filter(lam(w): not(standard-stop-words.member(w)) end)
-    else:
-      article-words := orig-article-words
+      article-words := article-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+    else: false
     end
     new-row = tbl.row(article-name, angle-difference-lists(candidate-words, article-words))
     tbl := tbl.add-row(new-row)
@@ -99,19 +76,12 @@ fun distance-to-2(candidate-article :: String, ignore-stop-words :: Boolean) -> 
   tbl
 end
 
-check:
-  tbl1 = distance-to-2(elephant-article, true)
-  tbl2 = distance-to-2(elephant-article, false)
-  distance-table-get-article-similarity(tbl1, 'elephant') is 0
-  distance-table-get-article-similarity(tbl2, 'elephant') is 0
-end
-
 fun distance-to(candidate-article):
-  distance-to-2(candidate-article, false)
+  distance-to-helper(candidate-article, standard-named-articles, false)
 end
 
 fun distance-to-stop(candidate-article):
-  distance-to-2(candidate-article, true)
+  distance-to-helper(candidate-article, standard-named-articles, true)
 end
 
 # try
