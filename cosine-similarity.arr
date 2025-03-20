@@ -94,7 +94,7 @@ fun simple-equality-lists(words1 :: List<String>, words2 :: List<String>) -> Boo
   words1 == words2
 end
 
-fun bow-equality-lists(words1 :: List<String>, words2 :: List<String>) -> Boolean:
+fun bag-equality-lists(words1 :: List<String>, words2 :: List<String>) -> Boolean:
   sd1 = list-of-words-to-sd(words1)
   sd2 = list-of-words-to-sd(words2)
   sd1 == sd2
@@ -113,7 +113,7 @@ fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> N
   end
 end
 
-fun angle-distance-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
+fun angle-difference-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
   cos-sim = cosine-similarity-lists(words1, words2)
   (num-acos(cos-sim) * 180) / PI
 end
@@ -128,15 +128,15 @@ fun simple-equality(string1 :: String, string2 :: String) -> Boolean:
   simple-equality-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
 end
 
-fun bow-equality(string1 :: String, string2 :: String) -> Boolean:
-  bow-equality-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
+fun bag-equality(string1 :: String, string2 :: String) -> Boolean:
+  bag-equality-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
 end
 
 fun cosine-similarity(string1 :: String, string2 :: String) -> Number:
   cosine-similarity-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
 end
 
-fun angle-distance(string1 :: String, string2 :: String) -> Number:
+fun angle-difference(string1 :: String, string2 :: String) -> Number:
   cos-sim = cosine-similarity(string1, string2)
   (num-acos(cos-sim) * 180) / PI
 end
@@ -151,12 +151,12 @@ fun simple-equality-files(file1 :: String, file2 :: String) -> Boolean:
   simple-equality(string1, string2)
 end
 
-fun bow-equality-files(file1 :: String, file2 :: String) -> Boolean:
+fun bag-equality-files(file1 :: String, file2 :: String) -> Boolean:
   ss1 = GDS.load-spreadsheet(file1)
   ss2 = GDS.load-spreadsheet(file2)
   words1 = get-spreadsheet-words(ss1)
   words2 = get-spreadsheet-words(ss2)
-  bow-equality-lists(words1, words2)
+  bag-equality-lists(words1, words2)
 end
 
 fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
@@ -167,7 +167,7 @@ fun cosine-similarity-files(file1 :: String, file2 :: String) -> Number:
   cosine-similarity-lists(words1, words2)
 end
 
-fun angle-distance-files(file1 :: String, file2 :: String) -> Number:
+fun angle-difference-files(file1 :: String, file2 :: String) -> Number:
   cos-sim = cosine-similarity-files(file1, file2)
   (num-acos(cos-sim) * 180) / PI
 end
@@ -184,11 +184,11 @@ check:
   simple-equality-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is false
 
   # comparing file to itself shd always yield 1
-  bow-equality-files(sheet_id, sheet_id) is true
-  bow-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
-  bow-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is true
-  bow-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is false
-  bow-equality-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is false
+  bag-equality-files(sheet_id, sheet_id) is true
+  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
+  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is true
+  bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is false
+  bag-equality-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is false
 
   # comparing file to itself shd always yield 1
   cosine-similarity-files(sheet_id, sheet_id) is-roughly 1
@@ -198,12 +198,12 @@ check:
   cosine-similarity-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~0.49
   cosine-similarity("doo doo be doo be", "doo be doo be doo") is-roughly 1
 
-  angle-distance-files(sheet_id, sheet_id) is-roughly 0
-  angle-distance-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 0
-  angle-distance-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is-roughly 0
-  angle-distance-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly ~45
-  angle-distance-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~60.878
-  angle-distance("doo doo be doo be", "doo be doo be doo") is-roughly 0
+  angle-difference-files(sheet_id, sheet_id) is-roughly 0
+  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is-roughly 0
+  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is-roughly 0
+  angle-difference-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "orange", "orange"]) is-roughly ~45
+  angle-difference-lists([list: "a", "a", "a", "b", "b", "d", "d", "d", "d", "d"], [list: "a"]) is%(within-rel(0.01)) ~60.878
+  angle-difference("doo doo be doo be", "doo be doo be doo") is-roughly 0
 
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]

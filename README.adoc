@@ -54,13 +54,13 @@ same signature as for cosine similarity above):
   check if the words are the same in the same order. Output is
   boolean.
 
-- `bow-equality-lists()`, `bow-equality-files()`, and
-  `bow-equality()` check if
+- `bag-equality-lists()`, `bag-equality-files()`, and
+  `bag-equality()` check if
   the Bag Of Words are the same (i.e., order doesn't matter, but
   count does). Output is boolean.
 
-- `angle-distance-lists()`, `angle-distance-files()`, and
-  `angle-distance` return the arccos of what the corresponding
+- `angle-difference-lists()`, `angle-difference-files()`, and
+  `angle-difference` return the arccos of what the corresponding
   `cosine-similarity*` function returns. Output is in degrees.
 
 == Debugging aid
