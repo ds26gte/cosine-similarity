@@ -66,6 +66,7 @@ check "cosine equality":
 
   # comparing file to itself shd always yield 1
   cosine-similarity-files(sheet_id1, sheet_id1) is-roughly 1
+  cosine-similarity-files(sheet_id2, sheet_id2) is-roughly 1
 
   # comparing file to a different file shd always yield < 1
   cosine-similarity-files(sheet_id1, sheet_id2) satisfies lam(x): x < 1 end
