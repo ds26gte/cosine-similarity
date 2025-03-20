@@ -33,13 +33,16 @@ fun is-non-punct(c :: String) -> Boolean:
   end
 end
 
+fun is-non-empty-string(s :: String) -> Boolean:
+  s <> ''
+end
+
 fun massage-string(w :: String) -> String:
-  fold(lam(string-a, string-b): string-a + string-b end, '',
-    filter(is-non-punct, string-explode(string-to-lower(w))))
+  fold(lam(string-a, string-b): string-a + string-b end, '', string-explode(string-to-lower(w)).filter(is-non-punct))
 end
 
 fun string-to-list-of-natlang-words(s :: String) -> List<String>:
-  string-split-all(massage-string(string-to-lower(s)), ' ')
+  string-split-all(massage-string(string-to-lower(s)), ' ').filter(is-non-empty-string)
 end
 
 fun string-to-bag(str :: String) -> Table block:
