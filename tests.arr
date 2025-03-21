@@ -1,5 +1,14 @@
 # load cosine-similarity.arr and animals.arr before this file
 
+check "dot-product":
+  x-sd = list-of-words-to-sd(string-to-list-of-natlang-words("apple banana citrus"))
+  y-sd = list-of-words-to-sd(string-to-list-of-natlang-words("apple banana banana citrus citrus citrus"))
+  dot-product(x-sd, x-sd) is 3
+  dot-product(y-sd, y-sd) is 14
+  dot-product(x-sd, y-sd) is 6
+  dot-product(y-sd, x-sd) is 6
+end
+
 check "simple equality":
 
   # comparing file to itself shd always yield true
