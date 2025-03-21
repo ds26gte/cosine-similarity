@@ -9,6 +9,10 @@ check "dot-product":
   dot-product(y-sd, x-sd) is 6
 end
 
+# two sample Google IDs for spreadsheets containing texts
+var sheet_id1 = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
+var sheet_id2 = "10ngDjr6ahZICKrSVb6zFnOKRDmqMNeqqJCVEDvxONWs"
+
 check "simple equality":
 
   # comparing file to itself shd always yield true

@@ -171,7 +171,4 @@ fun angle-difference-files(file1 :: String, file2 :: String) -> Number:
   (num-acos(cos-sim) * 180) / PI
 end
 
-var sheet_id1 = "1CnAGrIMW7W1Qrxtm8ZmJXYcQvkoMbSmzL7Ixw6d4FYQ"
-
-var sheet_id2 = "10ngDjr6ahZICKrSVb6zFnOKRDmqMNeqqJCVEDvxONWs"
 
