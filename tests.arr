@@ -143,10 +143,11 @@ check "string-to-bag":
   # the returned bag has columns "word" and "frequency"
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]
-
+  S.list-to-list-set(string-to-bag-stop("the whale").get-column("word")) is [S.list-set: "whale"]
+  S.list-to-list-set(string-to-bag-stop("the whale").get-column("frequency")) is [S.list-set: 1]
 end
 
-fun distance-table-get-article-similarity(tbl :: Table, art :: String) block:
+fun distance-table-get-article-difference(tbl :: Table, art :: String) block:
   # this is used only for testing.
   # takes the table resulting from a distance-to call, and an article name `art`,
   # and returns the similarity associated with `art`
@@ -156,7 +157,7 @@ fun distance-table-get-article-similarity(tbl :: Table, art :: String) block:
   for each(table-row from table-rows) block:
     if not(answer-found):
       if table-row.get-value('article') == art block:
-        simty := table-row.get-value('similarity')
+        simty := table-row.get-value('difference')
         answer-found := true
       else: false
       end
@@ -172,8 +173,8 @@ check "distance-to":
   #
   # following checks that the distance between an article and itself is 0
   # whether or not stopwords are removed
-  distance-table-get-article-similarity(tbl1, 'elephant') is 0
-  distance-table-get-article-similarity(tbl2, 'elephant') is 0
+  distance-table-get-article-difference(tbl1, 'elephant') is 0
+  distance-table-get-article-difference(tbl2, 'elephant') is 0
 end
 
 

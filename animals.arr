@@ -51,10 +51,6 @@ standard-named-articles = [list:
 
 student-article = elephant-article
 
-# stop words from https://dl.acm.org/doi/pdf/10.1145/378881.378888, Appendix A, Christopher Fox
-
-standard-stop-words = [list: "the", "and", "a", "that", "was", "for", "with", "not", "on", "at", "i", "had", "are", "or", "an", "they", "one", "would", "all", "there", "their", "him", "has", "when", "if", "out", "what", "up", "about", "into", "can", "other", "some", "time", "two", "then", "do", "now", "such", "man", "our", "even", "made", "after", "many", "must", "years", "much", "your", "down", "should", "of", "to", "in", "is", "he", "it", "as", "his", "be", "by", "this", "but", "from", "have", "you", "which", "were", "her", "she", "will", "we", "been", "who", "more", "no", "so", "said", "its", "than", "them", "only", "new", "could", "these", "may", "first", "any", "my", "like", "over", "me", "most", "also", "did", "before", "through", "where", "back", "way", "well", "because", "each", "people", "state", "mr", "how", "make", "still", "own", "work", "long", "both", "under", "never", "same", "while", "last", "might", "day", "since", "come", "great", "three", "go", "few", "use", "without", "place", "old", "small", "home", "went", "once", "school", "every", "united", "number", "does", "away", "water", "fact", "though", "enough", "almost", "took", "night", "system", "general", "better", "why", "end", "find", "asked", "going", "knew", "toward", "just", "those", "too", "world", "very", "good", "see", "men", "here", "get", "between", "year", "another", "being", "life", "know", "us", "off", "against", "came", "right", "states", "take", "himself", "during", "again", "around", "however", "mrs", "thought", "part", "high", "upon", "say", "used", "war", "until", "always", "something", "public", "put", "think", "head", "far", "hand", "set", "nothing", "point", "house", "later", "eyes", "next", "program", "give", "white", "room", "social", "young", "present", "order", "second", "possible", "light", "face", "important", "among", "early", "need", "within", "business", "felt", "best", "ever", "least", "got", "mind", "want", "others", "although", "open", "area", "done", "certain", "door", "different", "sense", "help", "perhaps", "group", "side", "several", "let", "national", "given", "rather", "per", "often", "god", "things", "large", "big", "become", "case", "along", "four", "power", "saw", "less", "thing", "today", "interest", "turned", "members", "family", "problem", "kind", "began", "thus", "seemed", "whole", "itself"]
-
 
 fun distance-to-helper(candidate-article :: String, corpus :: List<Any>, ignore-stop-words :: Boolean) -> Table block:
   var candidate-words = string-to-list-of-natlang-words(candidate-article)
@@ -62,7 +58,7 @@ fun distance-to-helper(candidate-article :: String, corpus :: List<Any>, ignore-
     candidate-words := candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
   else: false
   end
-  var tbl = table: article :: String, similarity :: Number end
+  var tbl = table: article :: String, difference :: Number end
   for each(named-article from corpus) block:
     article-name = named-article.get(0)
     var article-words = string-to-list-of-natlang-words(named-article.get(1))

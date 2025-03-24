@@ -45,8 +45,17 @@ fun string-to-list-of-natlang-words(s :: String) -> List<String>:
   string-split-all(massage-string(string-to-lower(s)), ' ').filter(is-non-empty-string)
 end
 
-fun string-to-bag(str :: String) -> Table block:
-  sd = list-of-words-to-sd(string-to-list-of-natlang-words(str))
+# stop words from https://dl.acm.org/doi/pdf/10.1145/378881.378888, Appendix A, Christopher Fox
+
+standard-stop-words = [list: "the", "and", "a", "that", "was", "for", "with", "not", "on", "at", "i", "had", "are", "or", "an", "they", "one", "would", "all", "there", "their", "him", "has", "when", "if", "out", "what", "up", "about", "into", "can", "other", "some", "time", "two", "then", "do", "now", "such", "man", "our", "even", "made", "after", "many", "must", "years", "much", "your", "down", "should", "of", "to", "in", "is", "he", "it", "as", "his", "be", "by", "this", "but", "from", "have", "you", "which", "were", "her", "she", "will", "we", "been", "who", "more", "no", "so", "said", "its", "than", "them", "only", "new", "could", "these", "may", "first", "any", "my", "like", "over", "me", "most", "also", "did", "before", "through", "where", "back", "way", "well", "because", "each", "people", "state", "mr", "how", "make", "still", "own", "work", "long", "both", "under", "never", "same", "while", "last", "might", "day", "since", "come", "great", "three", "go", "few", "use", "without", "place", "old", "small", "home", "went", "once", "school", "every", "united", "number", "does", "away", "water", "fact", "though", "enough", "almost", "took", "night", "system", "general", "better", "why", "end", "find", "asked", "going", "knew", "toward", "just", "those", "too", "world", "very", "good", "see", "men", "here", "get", "between", "year", "another", "being", "life", "know", "us", "off", "against", "came", "right", "states", "take", "himself", "during", "again", "around", "however", "mrs", "thought", "part", "high", "upon", "say", "used", "war", "until", "always", "something", "public", "put", "think", "head", "far", "hand", "set", "nothing", "point", "house", "later", "eyes", "next", "program", "give", "white", "room", "social", "young", "present", "order", "second", "possible", "light", "face", "important", "among", "early", "need", "within", "business", "felt", "best", "ever", "least", "got", "mind", "want", "others", "although", "open", "area", "done", "certain", "door", "different", "sense", "help", "perhaps", "group", "side", "several", "let", "national", "given", "rather", "per", "often", "god", "things", "large", "big", "become", "case", "along", "four", "power", "saw", "less", "thing", "today", "interest", "turned", "members", "family", "problem", "kind", "began", "thus", "seemed", "whole", "itself"]
+
+fun string-to-bag-helper(str :: String, ignore-stop-words :: Boolean) -> Table block:
+  var candidate-words = string-to-list-of-natlang-words(str)
+  if ignore-stop-words:
+    candidate-words := candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+  else: false
+  end
+  sd = list-of-words-to-sd(candidate-words)
   var tbl = table: word :: String, frequency :: Number end
   words = sd.keys().to-list()
   for each(word from words):
@@ -54,6 +63,14 @@ fun string-to-bag(str :: String) -> Table block:
     tbl := tbl.add-row(new-row)
   end
   tbl
+end
+
+fun string-to-bag(str :: String) -> Table:
+  string-to-bag-helper(str, false)
+end
+
+fun string-to-bag-stop(str :: String) -> Table:
+  string-to-bag-helper(str, true)
 end
 
 fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> Number block:
@@ -67,7 +84,6 @@ fun dot-product(sd1 :: SD.StringDict<Number>, sd2 :: SD.StringDict<Number>) -> N
   end
   n
 end
-
 
 fun get-spreadsheet-string(ss :: Any) -> String:
   ws = GDS.open-sheet-by-index(ss, 0, false)
@@ -170,5 +186,4 @@ fun angle-difference-files(file1 :: String, file2 :: String) -> Number:
   cos-sim = cosine-similarity-files(file1, file2)
   (num-acos(cos-sim) * 180) / PI
 end
-
 
