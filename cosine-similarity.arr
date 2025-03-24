@@ -69,7 +69,7 @@ fun string-to-bag(str :: String) -> Table:
   string-to-bag-helper(str, false)
 end
 
-fun string-to-bag-stop(str :: String) -> Table:
+fun string-to-bag-cleaned(str :: String) -> Table:
   string-to-bag-helper(str, true)
 end
 

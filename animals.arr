@@ -76,7 +76,7 @@ fun distance-to(candidate-article):
   distance-to-helper(candidate-article, standard-named-articles, false)
 end
 
-fun distance-to-stop(candidate-article):
+fun distance-to-cleaned(candidate-article):
   distance-to-helper(candidate-article, standard-named-articles, true)
 end
 
@@ -85,6 +85,6 @@ end
 # distance-to(student-article)
 # -- this doesn't ignore stop words
 
-# distance-to-stop(student-article)
+# distance-to-cleaned(student-article)
 # -- this does ignore stop words
 

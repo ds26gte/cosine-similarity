@@ -143,8 +143,8 @@ check "string-to-bag":
   # the returned bag has columns "word" and "frequency"
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("word")) is [S.list-set: "be", "doo"]
   S.list-to-list-set(string-to-bag("doo be doo be doo").get-column("frequency")) is [S.list-set: 2, 3]
-  S.list-to-list-set(string-to-bag-stop("the whale").get-column("word")) is [S.list-set: "whale"]
-  S.list-to-list-set(string-to-bag-stop("the whale").get-column("frequency")) is [S.list-set: 1]
+  S.list-to-list-set(string-to-bag-cleaned("the whale").get-column("word")) is [S.list-set: "whale"]
+  S.list-to-list-set(string-to-bag-cleaned("the whale").get-column("frequency")) is [S.list-set: 1]
 end
 
 fun distance-table-get-article-difference(tbl :: Table, art :: String) block:
@@ -169,7 +169,7 @@ end
 
 check "distance-to":
   tbl1 = distance-to(elephant-article) # stopwords present
-  tbl2 = distance-to-stop(elephant-article) # stopwords ignored
+  tbl2 = distance-to-cleaned(elephant-article) # stopwords ignored
   #
   # following checks that the distance between an article and itself is 0
   # whether or not stopwords are removed
