@@ -22,7 +22,7 @@ check "simple equality":
   # comparing file to a different file shd always yield false
   simple-equality-files(sheet_id1, sheet_id2) is false
   simple-equality-files(sheet_id2, sheet_id1) is false
-  
+
   # comparing a text to itself yields true
   simple-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
 
@@ -56,7 +56,7 @@ check "bag equality":
 
   # comparing a text to itself yields true
   bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "apple", "orange"]) is true
-  
+
   # comparing a text to a permuted version of itself yields true
   bag-equality-lists([list: "apple", "apple", "orange"], [list: "apple", "orange", "apple"]) is true
 
@@ -129,7 +129,7 @@ check "angle difference":
 
   # comparing exactly similar texts yields 0
   angle-difference-lists([list: "doo", "doo", "be", "doo", "be"], [list: "doo", "be", "doo", "be", "doo"]) is%(within-rel(0.01)) 0
-  
+
   # same as above, but using single strings instead of lists of words
   angle-difference("apple apple orange", "apple apple orange") is-roughly 0
   angle-difference("apple apple orange", "apple orange apple") is-roughly 0
@@ -145,7 +145,6 @@ check "angle difference":
   angle-difference-cleaned("a a a b b d d d d d", "a") raises "cosine-similarity"
   angle-difference-cleaned("doo doo be doo be", "doo be doo be doo") is-roughly 0
 end
-
 
 check "string-to-bag":
   # the returned bag has columns "word" and "frequency"
