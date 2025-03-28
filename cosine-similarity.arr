@@ -49,10 +49,15 @@ end
 
 standard-stop-words = [list: "the", "and", "a", "that", "was", "for", "with", "not", "on", "at", "i", "had", "are", "or", "an", "they", "one", "would", "all", "there", "their", "him", "has", "when", "if", "out", "what", "up", "about", "into", "can", "other", "some", "time", "two", "then", "do", "now", "such", "man", "our", "even", "made", "after", "many", "must", "years", "much", "your", "down", "should", "of", "to", "in", "is", "he", "it", "as", "his", "be", "by", "this", "but", "from", "have", "you", "which", "were", "her", "she", "will", "we", "been", "who", "more", "no", "so", "said", "its", "than", "them", "only", "new", "could", "these", "may", "first", "any", "my", "like", "over", "me", "most", "also", "did", "before", "through", "where", "back", "way", "well", "because", "each", "people", "state", "mr", "how", "make", "still", "own", "work", "long", "both", "under", "never", "same", "while", "last", "might", "day", "since", "come", "great", "three", "go", "few", "use", "without", "place", "old", "small", "home", "went", "once", "school", "every", "united", "number", "does", "away", "water", "fact", "though", "enough", "almost", "took", "night", "system", "general", "better", "why", "end", "find", "asked", "going", "knew", "toward", "just", "those", "too", "world", "very", "good", "see", "men", "here", "get", "between", "year", "another", "being", "life", "know", "us", "off", "against", "came", "right", "states", "take", "himself", "during", "again", "around", "however", "mrs", "thought", "part", "high", "upon", "say", "used", "war", "until", "always", "something", "public", "put", "think", "head", "far", "hand", "set", "nothing", "point", "house", "later", "eyes", "next", "program", "give", "white", "room", "social", "young", "present", "order", "second", "possible", "light", "face", "important", "among", "early", "need", "within", "business", "felt", "best", "ever", "least", "got", "mind", "want", "others", "although", "open", "area", "done", "certain", "door", "different", "sense", "help", "perhaps", "group", "side", "several", "let", "national", "given", "rather", "per", "often", "god", "things", "large", "big", "become", "case", "along", "four", "power", "saw", "less", "thing", "today", "interest", "turned", "members", "family", "problem", "kind", "began", "thus", "seemed", "whole", "itself"]
 
+
+fun remove-stop-words(list-of-words :: List<String>):
+  list-of-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+end
+
 fun string-to-bag-helper(str :: String, ignore-stop-words :: Boolean) -> Table block:
   var candidate-words = string-to-list-of-natlang-words(str)
   if ignore-stop-words:
-    candidate-words := candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+    candidate-words := remove-stop-words(candidate-words)
   else: false
   end
   sd = list-of-words-to-sd(candidate-words)
@@ -122,6 +127,7 @@ fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> N
   # the usual cosine similarity, as described in
   # https://en.wikipedia.org/wiki/Cosine_similarity
   if sd1 == sd2: 1
+  else if (sd1.count() == 0) or (sd2.count() == 0): 0
   else:
     dot-product(sd1, sd2) / (sqrt(dot-product(sd1, sd1)) * sqrt(dot-product(sd2, sd2)))
   end
@@ -129,7 +135,7 @@ end
 
 fun angle-difference-lists(words1 :: List<String>, words2 :: List<String>) -> Number:
   cos-sim = cosine-similarity-lists(words1, words2)
-  (num-acos(cos-sim) * 180) / PI
+  (num-acos(cos-sim) * 180) / 3.14159265
 end
 
 # *-similarity functions: These compare string inputs directly
@@ -139,20 +145,50 @@ fun simple-equality(string1 :: String, string2 :: String) -> Boolean:
   # massage the argument strings (converting to lower case, removing punctuation) before comparing
   #
   # string1 == string2
-  simple-equality-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
+  words1 = string-to-list-of-natlang-words(string1)
+  words2 = string-to-list-of-natlang-words(string2)
+  simple-equality-lists(words1, words2)
 end
 
 fun bag-equality(string1 :: String, string2 :: String) -> Boolean:
-  bag-equality-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
+  words1 = string-to-list-of-natlang-words(string1)
+  words2 = string-to-list-of-natlang-words(string2)
+  bag-equality-lists(words1, words2)
 end
 
 fun cosine-similarity(string1 :: String, string2 :: String) -> Number:
-  cosine-similarity-lists(string-to-list-of-natlang-words(string1), string-to-list-of-natlang-words(string2))
+  words1 = string-to-list-of-natlang-words(string1)
+  words2 = string-to-list-of-natlang-words(string2)
+  cosine-similarity-lists(words1, words2)
 end
 
 fun angle-difference(string1 :: String, string2 :: String) -> Number:
   cos-sim = cosine-similarity(string1, string2)
-  (num-acos(cos-sim) * 180) / PI
+  (num-acos(cos-sim) * 180) / 3.14159265
+end
+
+fun simple-equality-cleaned(string1 :: String, string2 :: String) -> Boolean:
+  words1 = remove-stop-words(string-to-list-of-natlang-words(string1))
+  words2 = remove-stop-words(string-to-list-of-natlang-words(string2))
+  simple-equality-lists(words1, words2)
+end
+
+fun bag-equality-cleaned(string1 :: String, string2 :: String) -> Boolean:
+  words1 = remove-stop-words(string-to-list-of-natlang-words(string1))
+  words2 = remove-stop-words(string-to-list-of-natlang-words(string2))
+  bag-equality-lists(words1, words2)
+end
+
+fun cosine-similarity-cleaned(string1 :: String, string2 :: String) -> Number:
+  words1 = remove-stop-words(string-to-list-of-natlang-words(string1))
+  words2 = remove-stop-words(string-to-list-of-natlang-words(string2))
+  cosine-similarity-lists(words1, words2)
+end
+
+fun angle-difference-cleaned(string1 :: String, string2 :: String) -> Number:
+  words1 = remove-stop-words(string-to-list-of-natlang-words(string1))
+  words2 = remove-stop-words(string-to-list-of-natlang-words(string2))
+  angle-difference-lists(words1, words2)
 end
 
 # *-similarity-files: These compares files (Google Ids) containing the respective contents.
@@ -184,6 +220,5 @@ end
 
 fun angle-difference-files(file1 :: String, file2 :: String) -> Number:
   cos-sim = cosine-similarity-files(file1, file2)
-  (num-acos(cos-sim) * 180) / PI
+  (num-acos(cos-sim) * 180) / 3.14159265
 end
-

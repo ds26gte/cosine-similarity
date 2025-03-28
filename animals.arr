@@ -51,11 +51,10 @@ standard-named-articles = [list:
 
 student-article = elephant-article
 
-
 fun distance-to-helper(candidate-article :: String, corpus :: List<Any>, ignore-stop-words :: Boolean) -> Table block:
   var candidate-words = string-to-list-of-natlang-words(candidate-article)
   if ignore-stop-words:
-    candidate-words := candidate-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+    candidate-words := remove-stop-words(candidate-words)
   else: false
   end
   var tbl = table: article :: String, difference :: Number end
@@ -63,7 +62,7 @@ fun distance-to-helper(candidate-article :: String, corpus :: List<Any>, ignore-
     article-name = named-article.get(0)
     var article-words = string-to-list-of-natlang-words(named-article.get(1))
     if ignore-stop-words:
-      article-words := article-words.filter(lam(w): not(standard-stop-words.member(w)) end)
+      article-words := remove-stop-words(article-words)
     else: false
     end
     new-row = tbl.row(article-name, angle-difference-lists(candidate-words, article-words))
