@@ -127,7 +127,8 @@ fun cosine-similarity-lists(words1 :: List<String>, words2 :: List<String>) -> N
   # the usual cosine similarity, as described in
   # https://en.wikipedia.org/wiki/Cosine_similarity
   if sd1 == sd2: 1
-  else if (sd1.count() == 0) or (sd2.count() == 0): 0
+  else if (sd1.count() == 0) or (sd2.count() == 0):
+    raise('cosine-similarity is undefined when one arg is empty and the other isn\'t; given ' + to-string(words1) + ' and ' + to-string(words2))
   else:
     dot-product(sd1, sd2) / (sqrt(dot-product(sd1, sd1)) * sqrt(dot-product(sd2, sd2)))
   end

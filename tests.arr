@@ -141,7 +141,8 @@ check "angle difference":
   angle-difference-cleaned("apple apple orange", "apple apple orange") is-roughly 0
   angle-difference-cleaned("apple apple orange", "apple orange apple") is-roughly 0
   angle-difference-cleaned("apple apple orange", "apple orange orange orange") is-roughly ~45
-  angle-difference-cleaned("a a a b b d d d d d", "a") is%(within-rel(0.01)) ~90
+  # angle-difference-cleaned("a a a b b d d d d d", "a") is%(within-rel(0.01)) ~90
+  angle-difference-cleaned("a a a b b d d d d d", "a") raises "cosine-similarity"
   angle-difference-cleaned("doo doo be doo be", "doo be doo be doo") is-roughly 0
 end
 
